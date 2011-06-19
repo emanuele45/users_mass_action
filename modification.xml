@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+
+	<id>emanuele:mass_change_membergroup</id>
+	<version>0.1.0</version>
+
+	<file name="$sourcedir/ManageMembers.php">
+		<operation><!-- 1 -->
+			<search position="after"><![CDATA[
+	if ($context['sub_action'] == 'query' && !empty($_REQUEST['params']) && empty($_POST))]]></search>
+			<add><![CDATA[
+	// Are we changing groups?
+	$groups = array('primary', 'secondary');
+	foreach($groups as $group){
+		if (isset($_POST['change_' . $group . '_membergroup']) && !empty($_POST['new_membergroup'])
+				&& !empty($_POST['delete']) && allowedTo('manage_membergroups'))
+		{
+			checkSession();
+
+			// Clean the input.
+			foreach ($_POST['delete'] as $key => $value)
+			{
+				$_POST['delete'][$key] = (int) $value;
+				// Don't delete yourself, idiot.
+				if ($value == $user_info['id'])
+					unset($_POST['delete'][$key]);
+			}
+			if($group=='primary')
+				$type = 'force_primary';
+			else
+				$type = 'only_additional';
+
+			if (!empty($_POST['delete']))
+			{
+				// Change all the selected members' group.
+				require_once($sourcedir . '/Subs-Membergroups.php');
+				if($_POST['new_membergroup'] != -1)
+					addMembersToGroup($_POST['delete'], $_POST['new_membergroup'], $type, true);
+				else
+					removeMembersFromGroups($_POST['delete'],null,true);
+			}
+		}
+	}
+]]></add>
+		</operation>
+		<operation><!-- 2 -->
+			<search position="after"><![CDATA[
+	// Without not enough permissions, don't show 'delete members' checkboxes.]]></search>
+			<add><![CDATA[
+	if(allowedTo('manage_membergroups'))
+		$listOptions['additional_rows'][] = array(
+				'position' => 'below_table_data',
+				'value' => '<select onchange="if(this.value==-1){if(!confirm(\'' . $txt['confirm_remove_membergroup'] . '\')){this.value=0;}}" name="new_membergroup">' . 
+				createGroupsList() . '</select>
+				<input type="submit" name="change_primary_membergroup" value="' . $txt['admin_change_primary_membergroup'] . '" onclick="return confirm(\'' . $txt['confirm_change_primary_membergroup'] . '\');" class="button_submit" />
+				<input type="submit" name="change_secondary_membergroup" value="' . $txt['admin_change_secondary_membergroup'] . '" onclick="return confirm(\'' . $txt['confirm_change_secondary_membergroup'] . '\');" class="button_submit" />',
+				'style' => 'text-align: left;',
+			);
+]]></add>
+		</operation>
+		<operation><!-- 3 -->
+			<search position="end" />
+			<add><![CDATA[
+function createGroupsList(){
+	global $context, $smcFunc, $user_info, $sourcedir, $txt;
+
+	require_once($sourcedir . '/Profile-Modify.php');
+	loadLanguage('Profile');
+	profileLoadGroups();
+
+	// Better remove admin membergroup...and set it to a "remove all"
+	$context['member_groups'][1] = array(
+						'id' => -1,
+						'name' => $txt['remove_all'],
+						'is_primary' => 0,
+	);
+	$selects = '';
+	// no primary is tricky...
+	$context['member_groups'][0] = array(
+						'id' => 0,
+						'name' => '',
+						'is_primary' => 1,
+	);
+
+	foreach($context['member_groups'] as $member_group){
+		$selects .= '
+									<option value="' . $member_group['id'] . '"' . ($member_group['is_primary'] ? ' selected="selected"' : '') . '>
+										' . $member_group['name'] . '
+									</option>';
+	}
+	return $selects;
+}]]></add>
+		</operation>
+	</file>
+</modification>
