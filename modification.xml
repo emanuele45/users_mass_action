@@ -83,8 +83,22 @@
 		{
 			require_once($sourcedir . '/ManageBans.php');
 
+			$id_ban = $smcFunc['db_query']('', '
+				SELECT id_ban_group
+				FROM {db_prefix}ban_groups
+				WHERE name = \'Mass bans\'
+				LIMIT 1',
+				array()
+			);
+			if($smcFunc['db_num_rows']($id_ban)!=0)
+				list($ban_group_id) = $smcFunc['db_fetch_row']($id_ban);
+			else
+				$ban_group_id = null;
+
+			$smcFunc['db_free_result']($id_ban);
+
 			$members = array();
-			$_REQUEST['bg'] = !empty($modSettings['mass_bans']) ? $modSettings['mass_bans'] : null;
+			$_REQUEST['bg'] = $ban_group_id;
 
 			// Set up an array of bans
 			foreach ($_POST['delete'] as $key => $value)
@@ -107,7 +121,7 @@
 					break;
 				case 'ban_ips':
 					$what = 'member_ip';
-					$post_ban = !empty($modSettings['mass_bans']) ? 'ip' : 'main_ip';
+					$post_ban = !empty($ban_group_id) ? 'ip' : 'main_ip';
 					$_POST['ban_suggestion'][] = 'main_ip';
 					$_POST['bantype'] = 'ip_ban';
 					break;
@@ -121,32 +135,34 @@
 				array(
 					'id_members' => $members,
 			));
+
 			$_POST['expiration'] = 'never';
 			$_POST['full_ban'] = 1;
 			$_POST['reason'] = 'Mass ban';
 			$_POST['notes'] = '';
-			if(!empty($modSettings['mass_bans']))
-				$_POST['add_new_trigger'] = 1;
-			else
-				$_POST['add_ban'] = 1;
 			
 			while($row = $smcFunc['db_fetch_assoc']($request))
 			{
+				$_POST['add_new_trigger'] = !empty($ban_group_id) ? 1 : null;
+				$_POST['add_ban'] = empty($ban_group_id) ? 1 : null;
 				$_POST['ban_name'] = 'Mass bans';
 				$_POST[$post_ban] = $row[$what];
 				$_REQUEST['u'] = $row['id_member'];
+
 				BanEdit();
-				if(empty($modSettings['mass_bans'])){
-					$request = $smcFunc['db_query']('', '
+				if(empty($ban_group_id)){
+					$id_ban = $smcFunc['db_query']('', '
 						SELECT id_ban_group
 						FROM {db_prefix}ban_groups
 						WHERE name = \'Mass bans\'
 						LIMIT 1',
 						array()
 					);
-					list($ban_group_id) = $smcFunc['db_fetch_row']($request);
-					$smcFunc['db_free_result']($request);
-					updateSettings(array('mass_bans' => $ban_group_id));
+					if($smcFunc['db_num_rows']($id_ban)!=0)
+						list($ban_group_id) = $smcFunc['db_fetch_row']($id_ban);
+					else
+						$ban_group_id = null;
+					$smcFunc['db_free_result']($id_ban);
 				}
 			}
 			$smcFunc['db_free_result']($request);
