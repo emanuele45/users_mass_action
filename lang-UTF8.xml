@@ -4,7 +4,7 @@
 
 	<id>emanuele:user_mass_action</id>
 	<version>0.1.0</version>
-	<file name="$themedir/languages/Modifications.english-UTF8.php" error="skip">
+	<file name="$languagedir/Modifications.english-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
@@ -18,7 +18,7 @@ $txt['admin_ban_userips'] = 'Ban by IPs';
 ]]></add>
 		</operation>
 	</file>
-	<file name="$themedir/languages/Modifications.italian-UTF8.php" error="skip">
+	<file name="$languagedir/Modifications.italian-UTF8.php" error="skip">
 		<operation>
 			<search position="end" />
 			<add><![CDATA[
