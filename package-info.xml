@@ -9,10 +9,15 @@
 		<modification>modification.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang-UTF8.xml</modification>
+		<require-file name="Subs-UsersMassActions.php" destination="$sourcedir" />
+		<database>installScript.php</database>
+		<redirect url="?action=admin;area=modsettings;sa=general" />
 	</install>
 	<uninstall for="2.0">
 		<modification reverse="true">modification.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang-UTF8.xml</modification>
+		<remove-file name="$sourcedir/Subs-UsersMassActions.php" />
+		<database reverse="true">installScript.php</database>
 	</uninstall>
 </package-info>

@@ -16,6 +16,8 @@ $txt['confirm_change_secondary_membergroup'] = 'Are you sure you want to change 
 $txt['admin_ban_usernames'] = 'Ban by usernames';
 $txt['admin_ban_useremails'] = 'Ban by email addresses';
 $txt['admin_ban_userips'] = 'Ban by IPs';
+$txt['admin_ban_usernames_and_emails'] = 'Ban by usernames and email addresses';
+$txt['users_mass_action_ban_name'] = 'Name of the ban list to be used for mass ban actions';
 ]]></add>
 		</operation>
 	</file>
@@ -25,12 +27,14 @@ $txt['admin_ban_userips'] = 'Ban by IPs';
 			<add><![CDATA[
 $txt['admin_change_primary_membergroup'] = 'Cambia gruppo primario';
 $txt['admin_change_secondary_membergroup'] = 'Aggiungi gruppo secondario';
-$txt['confirm_remove_membergroup'] = 'Selezionando questa opzione tuttii gruppi verranno rimossi! Sei sicuro?';
+$txt['confirm_remove_membergroup'] = 'Selezionando questa opzione tutti i gruppi verranno rimossi! Sei sicuro?';
 $txt['confirm_change_primary_membergroup'] = 'Sei sicuro di voler cambiare il gruppo primario agli utenti selezionati?';
 $txt['confirm_change_secondary_membergroup'] = 'Sei sicuro di voler cambiare il gruppo aggiuntivo agli utenti selezionati?';
 $txt['admin_ban_usernames'] = 'Ban per nome utente';
 $txt['admin_ban_useremails'] = 'Ban per indirizzo email';
 $txt['admin_ban_userips'] = 'Ban per IP';
+$txt['admin_ban_usernames_and_emails'] = 'Ban per nome utente e indirizzo email';
+$txt['users_mass_action_ban_name'] = 'Nome della lista ban da utilizzare per ban multipli';
 ]]></add>
 		</operation>
 	</file>
