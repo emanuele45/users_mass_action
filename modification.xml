@@ -86,7 +86,7 @@
 			$id_ban = $smcFunc['db_query']('', '
 				SELECT id_ban_group
 				FROM {db_prefix}ban_groups
-				WHERE name = \'Mass bans\'
+				WHERE name = \'' . $modSettings['users_mass_action_ban_name'] . '\'
 				LIMIT 1',
 				array()
 			);
@@ -108,7 +108,8 @@
 
 			$mactions = $_POST['maction'] == 'ban_names_mails' ? array('ban_names', 'ban_mails') : array($_POST['maction']);
 
-			foreach($mactions as $maction) {
+			foreach ($mactions as $maction) {
+				$checkIPs = false;
 				switch ($maction) {
 					case 'ban_names':
 						$what = 'member_name';
@@ -123,6 +124,7 @@
 						$_POST['bantype'] = 'email_ban';
 						break;
 					case 'ban_ips':
+						$checkIPs = true;
 						$what = 'member_ip';
 						$post_ban = !empty($ban_group_id) ? 'ip' : 'main_ip';
 						$_POST['ban_suggestion'][] = 'main_ip';
@@ -145,8 +147,15 @@
 				$_POST['ban_name'] = !empty($modSettings['users_mass_action_ban_name']) ? $modSettings['users_mass_action_ban_name'] : 'Mass ban';
 				$_POST['notes'] = '';
 
-				while($row = $smcFunc['db_fetch_assoc']($request))
+				while ($row = $smcFunc['db_fetch_assoc']($request))
 				{
+					if ($checkIPs) {
+						$ip_parts = ip2range($row[$what]);
+						if (users_mass_action_checkExistingTriggerIP($ip_parts, $row[$what]))
+							continue;
+
+						$_POST['ip'] = $row[$what];
+					}
 					$_POST['add_new_trigger'] = !empty($ban_group_id) ? 1 : null;
 					$_POST['add_ban'] = empty($ban_group_id) ? 1 : null;
 					$_POST[$post_ban] = $row[$what];
@@ -206,39 +215,6 @@
 			),
 		),
 ]]></add>
-		</operation>
-		<operation><!-- 3 -->
-			<search position="end" />
-			<add><![CDATA[
-function createGroupsList(){
-	global $context, $smcFunc, $user_info, $sourcedir, $txt;
-
-	require_once($sourcedir . '/Profile-Modify.php');
-	loadLanguage('Profile');
-	profileLoadGroups();
-
-	// Better remove admin membergroup...and set it to a "remove all"
-	$context['member_groups'][1] = array(
-						'id' => -1,
-						'name' => $txt['remove_all'],
-						'is_primary' => 0,
-	);
-	$selects = '';
-	// no primary is tricky...
-	$context['member_groups'][0] = array(
-						'id' => 0,
-						'name' => '',
-						'is_primary' => 1,
-	);
-
-	foreach($context['member_groups'] as $member_group){
-		$selects .= '
-									<option value="' . $member_group['id'] . '"' . ($member_group['is_primary'] ? ' selected="selected"' : '') . '>
-										' . $member_group['name'] . '
-									</option>';
-	}
-	return $selects;
-}]]></add>
 		</operation>
 	</file>
 </modification>
