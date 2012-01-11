@@ -1,11 +1,23 @@
 <?xml version="1.0"?>
 <!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<license><!--
+/**
+ * User Mass Actions (uma)
+ *
+ * @package uma
+ * @author emanuele
+ * @copyright 2011 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.1.2
+ */
+--></license>
 	<id>emanuele:user_mass_action</id>
 	<name>Users mass actions</name>
-	<version>0.1.0</version>
+	<version>0.1.2</version>
 	<type>modification</type>
-	<install for="2.0">
+	<install for="2.0 - 2.0.99">
 		<modification>modification.xml</modification>
 		<modification>lang.xml</modification>
 		<modification>lang-UTF8.xml</modification>
@@ -13,7 +25,7 @@
 		<database>installScript.php</database>
 		<redirect url="?action=admin;area=modsettings;sa=general" />
 	</install>
-	<uninstall for="2.0">
+	<uninstall for="2.0 - 2.0.99">
 		<modification reverse="true">modification.xml</modification>
 		<modification reverse="true">lang.xml</modification>
 		<modification reverse="true">lang-UTF8.xml</modification>

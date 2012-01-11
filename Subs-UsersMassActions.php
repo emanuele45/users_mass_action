@@ -1,19 +1,40 @@
 <?php
+/**
+ * User Mass Actions (uma)
+ *
+ * @package uma
+ * @author emanuele
+ * @copyright 2011 emanuele, Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 0.1.2
+ */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-function add_users_mass_action_settings (&$config_vars) {
-	$config_vars[] = array('text', 'users_mass_action_ban_name');
+/**
+ *
+ * Hooks
+ *
+ */
 
-	if (isset($_GET['save']))
-	{
-		$_POST['users_mass_action_ban_name'] = !empty($_POST['users_mass_action_ban_name']) ? $_POST['users_mass_action_ban_name'] : 'Mass bans';
-	}
+function add_users_mass_action_settings (&$config_vars)
+{
+	$config_vars[] = array('text', 'users_mass_action_ban_name');
 }
 
-function createGroupsList(){
+/**
+ *
+ * Functions
+ *
+ */
+
+function createGroupsList()
+{
 	global $context, $smcFunc, $user_info, $sourcedir, $txt;
+
+	$selects = '';
 
 	require_once($sourcedir . '/Profile-Modify.php');
 	loadLanguage('Profile');
@@ -21,23 +42,22 @@ function createGroupsList(){
 
 	// Better remove admin membergroup...and set it to a "remove all"
 	$context['member_groups'][1] = array(
-						'id' => -1,
-						'name' => $txt['remove_all'],
-						'is_primary' => 0,
+		'id' => -1,
+		'name' => $txt['remove_all'],
+		'is_primary' => 0,
 	);
-	$selects = '';
 	// no primary is tricky...
 	$context['member_groups'][0] = array(
-						'id' => 0,
-						'name' => '',
-						'is_primary' => 1,
+		'id' => 0,
+		'name' => '',
+		'is_primary' => 1,
 	);
 
 	foreach($context['member_groups'] as $member_group){
 		$selects .= '
-									<option value="' . $member_group['id'] . '"' . ($member_group['is_primary'] ? ' selected="selected"' : '') . '>
-										' . $member_group['name'] . '
-									</option>';
+			<option value="' . $member_group['id'] . '"' . ($member_group['is_primary'] ? ' selected="selected"' : '') . '>
+				' . $member_group['name'] . '
+			</option>';
 	}
 	return $selects;
 }
